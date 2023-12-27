@@ -1,40 +1,5 @@
-import express from "express";
-import "express-async-errors";
-import { json } from "body-parser";
 import mongoose from "mongoose";
-import cookieSession from "cookie-session";
-
-import {
-  currentUserRouter,
-  signinRouter,
-  signoutRouter,
-  signupRouter,
-} from "./routes";
-import { errorHandler } from "./middlewares";
-import { NotFoundError } from "./errors";
-
-const app = express();
-app.set("trust proxy", true);
-app.use(json());
-app.use(
-  cookieSession({
-    signed: false,
-    secure: true,
-  })
-);
-
-// routers
-app.use(currentUserRouter);
-app.use(signinRouter);
-app.use(signoutRouter);
-app.use(signupRouter);
-
-app.all("*", () => {
-  throw new NotFoundError();
-});
-
-// middlewares
-app.use(errorHandler);
+import app from "./app";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
