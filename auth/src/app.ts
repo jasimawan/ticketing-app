@@ -9,8 +9,7 @@ import {
   signoutRouter,
   signupRouter,
 } from "./routes";
-import { errorHandler } from "./middlewares";
-import { NotFoundError } from "./errors";
+import { errorHandler, NotFoundError } from "@jasimawan/common";
 
 const app = express();
 app.set("trust proxy", true);
