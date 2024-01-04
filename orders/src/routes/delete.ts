@@ -5,6 +5,8 @@ import {
   NotFoundError,
   OrderStatus,
 } from "@jasimawan/common";
+import { OrderCanceledPublisher } from "../events/publishers";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -21,6 +23,11 @@ router.delete("/api/orders/:id", async (req: Request, res: Response) => {
   order.status = OrderStatus.Canceled;
 
   await order.save();
+
+  await new OrderCanceledPublisher(natsWrapper.client).publish({
+    id: order.id,
+    ticket: { id: order.ticket.id },
+  });
 
   res.status(204).send(order);
 });
