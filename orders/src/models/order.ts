@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { OrderStatus } from "@jasimawan/common";
 import { TicketDoc } from "./ticket";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // An interface that described the properties that are required to create a order.
 interface OrderAttrs {
@@ -16,6 +17,7 @@ interface OrderDoc extends mongoose.Document {
   status: OrderStatus;
   expiresAt: Date;
   ticket: TicketDoc;
+  version: number;
 }
 
 // An interface that described the properties that a Order model has.
@@ -50,13 +52,15 @@ const orderSchema = new mongoose.Schema(
         delete ret._id;
       },
     },
-    versionKey: false,
   }
 );
 
 orderSchema.pre("save", async function (done) {
   done();
 });
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);
